@@ -67,11 +67,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse updateEmployee(int id, UpdateEmployeeRequest request) {
         // get found emp
         Employee foundEmp = findById(id).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee with id : %d not found!".formatted(id))
+                ()-> new ResponseStatusException(HttpStatus
+                        .NOT_FOUND,"Employee with id : %d not found!".formatted(id))
         );
         // check email but ignore the current email ;
         if(checkIfEmailExists(request.email()) && !foundEmp.getEmail().equals(request.email())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Email already exists!");
+            throw new ResponseStatusException(HttpStatus
+                    .CONFLICT,"Email already exists!");
         }
         // map found with request.fields
         empMapper.fromUpdateEmployee(request,foundEmp);
@@ -87,6 +89,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         // remove
         empRepo.getEmployees()
                 .remove(foundEmp);
+    }
+
+    @Override
+    public List<EmployeeResponse> searchByName(String name) {
+        return empRepo.getEmployees()
+                .stream()
+                .filter((emp->emp.getName().toLowerCase().contains(name.toLowerCase())))
+                .map(empMapper::toResponse)
+                .toList();
     }
 
     private Boolean checkIfEmailExists(String email) {

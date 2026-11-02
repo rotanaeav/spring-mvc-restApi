@@ -46,6 +46,13 @@ public class EmployeeController {
         service.deleteById(id);
     }
 
+    @GetMapping("/search")
+    public List<EmployeeResponse> searchEmployeesByName(
+            @RequestParam String name
+    ){
+        return service.searchByName(name);
+    }
+
 
 
 }
