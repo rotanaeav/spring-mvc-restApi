@@ -1,5 +1,5 @@
 package com.rotana.springmvc.repository;
-
+// old code
 import com.rotana.springmvc.domain.Employee;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;

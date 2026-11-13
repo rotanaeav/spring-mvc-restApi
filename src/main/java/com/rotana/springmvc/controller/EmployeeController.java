@@ -1,9 +1,8 @@
 package com.rotana.springmvc.controller;
 
-import com.rotana.springmvc.domain.Employee;
-import com.rotana.springmvc.dto.CreateEmployeeRequest;
-import com.rotana.springmvc.dto.EmployeeResponse;
-import com.rotana.springmvc.dto.UpdateEmployeeRequest;
+import com.rotana.springmvc.dto.employee.CreateEmployeeRequest;
+import com.rotana.springmvc.dto.employee.EmployeeResponse;
+import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
 import com.rotana.springmvc.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

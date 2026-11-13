@@ -1,14 +1,13 @@
 package com.rotana.springmvc.service.impl;
 
 import com.rotana.springmvc.domain.Employee;
-import com.rotana.springmvc.dto.CreateEmployeeRequest;
-import com.rotana.springmvc.dto.EmployeeResponse;
-import com.rotana.springmvc.dto.UpdateEmployeeRequest;
-import com.rotana.springmvc.exception.CustomExceptionHandling;
+import com.rotana.springmvc.dto.employee.CreateEmployeeRequest;
+import com.rotana.springmvc.dto.employee.EmployeeResponse;
+import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
 import com.rotana.springmvc.mapper.EmployeeMapper;
 import com.rotana.springmvc.repository.EmployeeRepository;
+import com.rotana.springmvc.repository.EmployeesRepository;
 import com.rotana.springmvc.service.EmployeeService;
-import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
     // inject repo :
-    private final EmployeeRepository empRepo;
+    private final EmployeesRepository empRepo;
     // inject mapper :
     private final EmployeeMapper empMapper;
 
@@ -32,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeResponse> getAll() {
 //        return empRepo.getEmployees().stream()
 //                .map(();
-        return empRepo.getEmployees()
+        return empRepo.findAll()
                 .stream()
                 .map(empMapper::toResponse) // we can : emp-> mapper.toResponse(emp)
                 .toList();
@@ -55,10 +54,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         Employee employee = empMapper.fromCreateEmployeeRequest(request); // map request to obj employee
-        employee.setId(nextId++);
-        employee.setIsActive(true);
 
-        empRepo.getEmployees().add(employee); // add to repo
+        empRepo.save(employee); // add to repo
 
         return empMapper.toResponse(employee); // map to response
     }
@@ -77,23 +74,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         // map found with request.fields
         empMapper.fromUpdateEmployee(request,foundEmp);
+        empRepo.save(foundEmp);// add updated to repo
         // response when success
         return empMapper.toResponse(foundEmp);
     }
 
     @Override
     public void deleteById(int id) {
-        Employee foundEmp = findById(id).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee with id : %d not found!".formatted(id))
-        );
+
+//        Employee foundEmp = findById(id).orElseThrow(
+//                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee with id : %d not found!".formatted(id))
+//        );
         // remove
-        empRepo.getEmployees()
-                .remove(foundEmp);
+//        empRepo.remove(foundEmp);
+        if (findById(id).isEmpty()){throw new
+        ResponseStatusException(HttpStatus.NOT_FOUND,"Employee not found!");}
+        else empRepo.deleteById(id);
     }
 
     @Override
     public List<EmployeeResponse> searchByName(String name) {
-        return empRepo.getEmployees()
+        return empRepo.findAll()
                 .stream()
                 .filter((emp->emp.getName().toLowerCase().contains(name.toLowerCase())))
                 .map(empMapper::toResponse)
@@ -101,14 +102,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Boolean checkIfEmailExists(String email) {
-        return empRepo.getEmployees()
+        return empRepo.findAll()
                 .stream()
                 .anyMatch(emp ->emp.getEmail().equals(email));
     }
     private Optional<Employee> findById(int id) {
-        return empRepo.getEmployees()
-                .stream()
-                .filter(emp -> emp.getId().equals(id))
-                .findFirst();
+        return empRepo.findById(id);
     }
 }

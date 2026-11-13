@@ -1,4 +1,4 @@
-package com.rotana.springmvc.dto;
+package com.rotana.springmvc.dto.employee;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
