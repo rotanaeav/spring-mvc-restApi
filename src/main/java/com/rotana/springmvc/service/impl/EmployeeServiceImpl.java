@@ -4,14 +4,13 @@ import com.rotana.springmvc.domain.Employee;
 import com.rotana.springmvc.dto.employee.CreateEmployeeRequest;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
 import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
+import com.rotana.springmvc.exception.ConflictException;
+import com.rotana.springmvc.exception.NotFoundException;
 import com.rotana.springmvc.mapper.EmployeeMapper;
-import com.rotana.springmvc.repository.EmployeeRepository;
 import com.rotana.springmvc.repository.EmployeesRepository;
 import com.rotana.springmvc.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return findById(id) // replace code cher with helper method
                 .map(empMapper::toResponse) // opt to empResponse
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee with id : %d not found!".formatted(id))
+                        () -> new NotFoundException("Employee not found!")
                 );
     }
 
@@ -50,7 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse createEmployee(CreateEmployeeRequest request) {
         // create obj with condiction :
         if (checkIfEmailExists(request.email())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists!");
+            throw new ConflictException("Email already exists!");
         }
 
         Employee employee = empMapper.fromCreateEmployeeRequest(request); // map request to obj employee
@@ -64,13 +63,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse updateEmployee(int id, UpdateEmployeeRequest request) {
         // get found emp
         Employee foundEmp = findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus
-                        .NOT_FOUND, "Employee with id : %d not found!".formatted(id))
+                () -> new NotFoundException("Employee not found!")
         );
         // check email but ignore the current email ;
         if (checkIfEmailExists(request.email()) && !foundEmp.getEmail().equals(request.email())) {
-            throw new ResponseStatusException(HttpStatus
-                    .CONFLICT, "Email already exists!");
+            throw new ConflictException("Email already exists!");
         }
         // map found with request.fields
         empMapper.fromUpdateEmployee(request, foundEmp);
@@ -88,8 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // remove
 //        empRepo.remove(foundEmp);
         if (findById(id).isEmpty()) {
-            throw new
-                    ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found!");
+            throw new NotFoundException("Employee not found!");
         } else empRepo.deleteById(id);
     }
 
@@ -104,6 +100,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Boolean checkIfEmailExists(String email) {
+//        return empRepo.existsByEmail(email);
         return empRepo.findAll()
                 .stream()
                 .anyMatch(emp -> emp.getEmail().equals(email));

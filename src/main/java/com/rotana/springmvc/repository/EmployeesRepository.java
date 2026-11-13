@@ -10,7 +10,5 @@ import java.util.List;
 @Repository
 public interface EmployeesRepository extends JpaRepository<Employee, Integer> {
 
-    List<EmployeeResponse> findAllByNameIgnoreCase(String name);
-
     List<EmployeeResponse> findAllByNameContainingIgnoreCase(String name);
 }
