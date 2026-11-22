@@ -23,9 +23,9 @@ public class EmployeeController {
     public List<EmployeeResponse> getEmployees() {
         return service.getAll();
     }
-    @GetMapping("/{id}")
-    public EmployeeResponse getEmployee(@PathVariable UUID id) {
-        return service.getById(id);
+    @GetMapping("/{employeeId}")
+    public EmployeeResponse getEmployee(@PathVariable UUID employeeId) {
+        return service.getById(employeeId);
     }
 
     @PostMapping
@@ -47,10 +47,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public List<EmployeeResponse> searchEmployeesByName(
-            @RequestParam String name
+    public List<EmployeeResponse> searchEmployeesByNameOrEmail(
+            @RequestParam String keyword
     ){
-        return service.searchByName(name);
+        return service.searchByNameOrEmail(keyword);
     }
     @PostMapping("/bulk")
     @ResponseStatus(HttpStatus.CREATED)

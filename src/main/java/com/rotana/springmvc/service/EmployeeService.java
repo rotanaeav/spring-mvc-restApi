@@ -5,7 +5,6 @@ import com.rotana.springmvc.dto.employee.EmployeeResponse;
 import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface EmployeeService {
@@ -16,7 +15,7 @@ public interface EmployeeService {
 
     void deleteById(UUID id);
 
-    List<EmployeeResponse> searchByName(String name);
+    List<EmployeeResponse> searchByNameOrEmail(String keyword);
     List<EmployeeResponse> findByName(String name);
 
     List<EmployeeResponse> bulkCreateEmployees(List<CreateEmployeeRequest> bulkRequest);

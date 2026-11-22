@@ -104,13 +104,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResponse> searchByName(String name) {
+    public List<EmployeeResponse> searchByNameOrEmail(String keyword) {
 //        return empRepo.findAll()
 //                .stream()
-//                .filter((emp->emp.getName().toLowerCase().contains(name.toLowerCase())))
+//                .filter((emp->emp.getName().toLowerCase().contains(keyword.toLowerCase())))
 //                .map(empMapper::toResponse)
 //                .toList();
-        return empRepo.findAllByNameContainingIgnoreCase(name).stream()
+        return empRepo.findAllByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword,keyword ).stream()
                 .map(empMapper::toResponse).toList();
     }
 
