@@ -5,14 +5,19 @@ import com.rotana.springmvc.dto.employee.EmployeeResponse;
 import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface EmployeeService {
     List<EmployeeResponse> getAll();
-    EmployeeResponse getById(int id);
+    EmployeeResponse getById(UUID id);
     EmployeeResponse createEmployee(CreateEmployeeRequest request);
-    EmployeeResponse updateEmployee(int id, UpdateEmployeeRequest request);
+    EmployeeResponse updateEmployee(UUID id, UpdateEmployeeRequest request);
 
-    void deleteById(int id);
+    void deleteById(UUID id);
 
     List<EmployeeResponse> searchByName(String name);
+    List<EmployeeResponse> findByName(String name);
+
+    List<EmployeeResponse> bulkCreateEmployees(List<CreateEmployeeRequest> bulkRequest);
 }

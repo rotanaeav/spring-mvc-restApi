@@ -1,10 +1,12 @@
 package com.rotana.springmvc.dto.employee;
 
+import com.rotana.springmvc.domain.Department;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record CreateEmployeeRequest(
         @NotBlank(message = "Name can't blank")
@@ -20,6 +22,10 @@ public record CreateEmployeeRequest(
 
 //        @NotBlank(message = "Hire date is required")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
-        LocalDate hireDate
+        LocalDate hireDate,
+
+//        @NotBlank (message = "Department can't blank")
+        @NotNull(message = "Department can't Nullable")
+        UUID departmentId
 ) {
 }

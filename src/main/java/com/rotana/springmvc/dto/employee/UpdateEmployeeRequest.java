@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record UpdateEmployeeRequest(
         @Size(min = 2, max = 50, message = "Name must be between 2 and 50 chars")
@@ -19,6 +20,7 @@ public record UpdateEmployeeRequest(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate hireDate,
 
-        Boolean isActive
+        Boolean isActive,
+        UUID departmentId
 ) {
 }

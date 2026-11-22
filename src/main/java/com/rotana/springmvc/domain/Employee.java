@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,12 +13,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 //@ToString
 @Entity
-@Table(name = "employee")
+@Table(name = "employees")
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false, unique = true)
@@ -27,4 +28,8 @@ public class Employee {
     private BigDecimal salary;
     private LocalDate hireDate;
     private Boolean isActive;
+    // define relationship :
+
+    @ManyToOne
+    private Department department;
 }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -23,7 +24,7 @@ public class EmployeeController {
         return service.getAll();
     }
     @GetMapping("/{id}")
-    public EmployeeResponse getEmployee(@PathVariable int id) {
+    public EmployeeResponse getEmployee(@PathVariable UUID id) {
         return service.getById(id);
     }
 
@@ -34,14 +35,14 @@ public class EmployeeController {
     }
 
     @PatchMapping("/{id}")
-    public EmployeeResponse updateEmployee(@PathVariable int id,
+    public EmployeeResponse updateEmployee(@PathVariable UUID id,
                                            @Valid @RequestBody UpdateEmployeeRequest request){
         return service.updateEmployee(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteEmployee(@PathVariable int id) {
+    public void deleteEmployee(@PathVariable UUID id) {
         service.deleteById(id);
     }
 
@@ -51,7 +52,10 @@ public class EmployeeController {
     ){
         return service.searchByName(name);
     }
-
-
+    @PostMapping("/bulk")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<EmployeeResponse> bulkCreateEmployees(@Valid @RequestBody List<CreateEmployeeRequest> bulkRequest) {
+        return service.bulkCreateEmployees(bulkRequest);
+    }
 
 }
