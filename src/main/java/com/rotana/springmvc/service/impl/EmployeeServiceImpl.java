@@ -4,7 +4,9 @@ import com.rotana.springmvc.domain.Department;
 import com.rotana.springmvc.domain.Employee;
 import com.rotana.springmvc.dto.employee.CreateEmployeeRequest;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
+import com.rotana.springmvc.dto.employee.TransferEmployeeRequest;
 import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
+import com.rotana.springmvc.exception.BadRequestException;
 import com.rotana.springmvc.exception.ConflictException;
 import com.rotana.springmvc.exception.NotFoundException;
 import com.rotana.springmvc.mapper.EmployeeMapper;
@@ -43,11 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse getById(UUID id) {
-        return findById(id) // replace code cher with helper method
-                .map(empMapper::toResponse) // opt to empResponse
-                .orElseThrow(
-                        () -> new NotFoundException("Employee not found!")
-                );
+        return empMapper.toResponse(findEmpById(id));
     }
 
     @Override
@@ -71,9 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeResponse updateEmployee(UUID id, UpdateEmployeeRequest request) {
         // get found emp
-        Employee foundEmp = findById(id).orElseThrow(
-                () -> new NotFoundException("Employee not found!")
-        );
+        Employee foundEmp = findEmpById(id);
         // check email but ignore the current email ;
         if (checkIfEmailExists(request.email()) && !foundEmp.getEmail().equals(request.email())) {
             throw new ConflictException("Email already exists!");
@@ -93,14 +89,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteById(UUID id) {
 
-//        Employee foundEmp = findById(id).orElseThrow(
+//        Employee foundEmp = findEmpById(id).orElseThrow(
 //                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Employee with id : %d not found!".formatted(id))
 //        );
         // remove
 //        empRepo.remove(foundEmp);
-        if (findById(id).isEmpty()) {
-            throw new NotFoundException("Employee not found!");
-        } else empRepo.deleteById(id);
+        findEmpById(id);
+        empRepo.deleteById(id);
     }
 
     @Override
@@ -110,12 +105,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 //                .filter((emp->emp.getName().toLowerCase().contains(keyword.toLowerCase())))
 //                .map(empMapper::toResponse)
 //                .toList();
-        return empRepo.findAllByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword,keyword ).stream()
+        return empRepo.findAllByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword).stream()
                 .map(empMapper::toResponse).toList();
     }
 
     @Override
-    public List<EmployeeResponse>findByName(String name) {
+    public List<EmployeeResponse> findByName(String name) {
         return empRepo.findByName(name).stream()
                 .map(empMapper::toResponse).toList();
     }
@@ -133,6 +128,25 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .toList();
     }
 
+    @Override
+    public EmployeeResponse transferEmployee(UUID employeeId, TransferEmployeeRequest request) {
+        Employee emp = findEmpById(employeeId);
+        Department dep = findDepartmentById(request.newDepartmentId());
+
+        if (dep.getIsActive()!=Boolean.TRUE){
+            throw new BadRequestException("Department is not active");
+        }
+
+        if (dep.getId().equals(emp.getDepartment().getId())){
+            throw new BadRequestException("Employee is already in this department");
+        }
+
+        emp.setDepartment(dep);
+        empRepo.save(emp);
+        return empMapper.toResponse(emp);
+    }
+
+
     private Boolean checkIfEmailExists(String email) {
 //        return empRepo.existsByEmail(email);
         return empRepo.findAll()
@@ -140,7 +154,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .anyMatch(emp -> emp.getEmail().equals(email));
     }
 
-    private Optional<Employee> findById(UUID id) {
-        return empRepo.findById(id);
+    private Employee findEmpById(UUID id) {
+        return empRepo.findById(id).orElseThrow(() -> new NotFoundException("Employee not found"));
+    }
+    private Department findDepartmentById(UUID id) {
+        return departmentRepo.findById(id).orElseThrow(() -> new NotFoundException("Department not found"));
     }
 }

@@ -2,6 +2,7 @@ package com.rotana.springmvc.controller;
 
 import com.rotana.springmvc.dto.employee.CreateEmployeeRequest;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
+import com.rotana.springmvc.dto.employee.TransferEmployeeRequest;
 import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
 import com.rotana.springmvc.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -56,6 +57,12 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     public List<EmployeeResponse> bulkCreateEmployees(@Valid @RequestBody List<CreateEmployeeRequest> bulkRequest) {
         return service.bulkCreateEmployees(bulkRequest);
+    }
+
+    @PutMapping("/{employeeId}/transfer")
+    public EmployeeResponse transferEmployee(@PathVariable UUID employeeId,
+                                             @Valid @RequestBody TransferEmployeeRequest request){
+        return service.transferEmployee(employeeId, request);
     }
 
 }

@@ -90,4 +90,15 @@ public class CustomExceptionHandling {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(BadRequestException e) {
+        return ErrorResponse.builder()
+                .status(Boolean.FALSE)
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .errors(null)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

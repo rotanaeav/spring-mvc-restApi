@@ -2,7 +2,9 @@ package com.rotana.springmvc.service;
 
 import com.rotana.springmvc.dto.employee.CreateEmployeeRequest;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
+import com.rotana.springmvc.dto.employee.TransferEmployeeRequest;
 import com.rotana.springmvc.dto.employee.UpdateEmployeeRequest;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,4 +21,6 @@ public interface EmployeeService {
     List<EmployeeResponse> findByName(String name);
 
     List<EmployeeResponse> bulkCreateEmployees(List<CreateEmployeeRequest> bulkRequest);
+
+    EmployeeResponse transferEmployee(UUID employeeId, TransferEmployeeRequest request);
 }
