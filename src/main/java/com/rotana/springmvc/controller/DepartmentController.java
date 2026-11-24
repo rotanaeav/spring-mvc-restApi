@@ -2,6 +2,7 @@ package com.rotana.springmvc.controller;
 
 import com.rotana.springmvc.dto.department.CreateDepartmentRequest;
 import com.rotana.springmvc.dto.department.DepartmentResponse;
+import com.rotana.springmvc.dto.department.DepartmentStatisticsResponse;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
 import com.rotana.springmvc.service.DepartmentService;
 import com.rotana.springmvc.utils.PageResponse;
@@ -48,6 +49,11 @@ public class DepartmentController {
     @PostMapping
     DepartmentResponse createDepartment(@Valid @RequestBody CreateDepartmentRequest request){
         return departmentService.createDepartment(request);
+    }
+
+    @GetMapping("/{departmentId}/statistics")
+    DepartmentStatisticsResponse getDepartmentStatistics(@PathVariable UUID departmentId){
+        return departmentService.getDepartmentStatistics(departmentId);
     }
 
 }

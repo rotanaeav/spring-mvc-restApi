@@ -59,7 +59,7 @@ public class EmployeeController {
         return service.bulkCreateEmployees(bulkRequest);
     }
 
-    @PutMapping("/{employeeId}/transfer")
+    @PatchMapping("/{employeeId}/transfer")
     public EmployeeResponse transferEmployee(@PathVariable UUID employeeId,
                                              @Valid @RequestBody TransferEmployeeRequest request){
         return service.transferEmployee(employeeId, request);

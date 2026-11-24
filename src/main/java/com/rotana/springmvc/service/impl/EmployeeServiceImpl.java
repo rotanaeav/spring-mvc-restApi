@@ -15,6 +15,7 @@ import com.rotana.springmvc.repository.EmployeeRepository;
 import com.rotana.springmvc.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse createEmployee(CreateEmployeeRequest request) {
         // create obj with condiction :
         if (checkIfEmailExists(request.email())) {
@@ -67,6 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse updateEmployee(UUID id, UpdateEmployeeRequest request) {
         // get found emp
         Employee foundEmp = findEmpById(id);
@@ -87,6 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public void deleteById(UUID id) {
 
 //        Employee foundEmp = findEmpById(id).orElseThrow(
@@ -116,6 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public List<EmployeeResponse> bulkCreateEmployees(List<CreateEmployeeRequest> bulkRequest) {
 //        return bulkRequest.stream()
 //                .map(empMapper::fromCreateEmployeeRequest)
@@ -129,6 +134,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse transferEmployee(UUID employeeId, TransferEmployeeRequest request) {
         Employee emp = findEmpById(employeeId);
         Department dep = findDepartmentById(request.newDepartmentId());

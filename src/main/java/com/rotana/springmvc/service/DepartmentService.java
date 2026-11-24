@@ -2,6 +2,7 @@ package com.rotana.springmvc.service;
 
 import com.rotana.springmvc.dto.department.CreateDepartmentRequest;
 import com.rotana.springmvc.dto.department.DepartmentResponse;
+import com.rotana.springmvc.dto.department.DepartmentStatisticsResponse;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
 import com.rotana.springmvc.utils.PageResponse;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface DepartmentService {
     void updateDepartmentStatus(UUID id, Boolean isActive);
 
     PageResponse<EmployeeResponse> getEmployeesByDepartment(UUID departmentId, Pageable pageable);
+
+    DepartmentStatisticsResponse getDepartmentStatistics(UUID departmentId);
 }

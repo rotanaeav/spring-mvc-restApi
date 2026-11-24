@@ -3,6 +3,7 @@ package com.rotana.springmvc.service.impl;
 import com.rotana.springmvc.domain.Department;
 import com.rotana.springmvc.dto.department.CreateDepartmentRequest;
 import com.rotana.springmvc.dto.department.DepartmentResponse;
+import com.rotana.springmvc.dto.department.DepartmentStatisticsResponse;
 import com.rotana.springmvc.dto.employee.EmployeeResponse;
 import com.rotana.springmvc.exception.NotFoundException;
 import com.rotana.springmvc.mapper.DepartmentMapper;
@@ -18,8 +19,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +46,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public DepartmentResponse createDepartment(CreateDepartmentRequest request) {
         Department department = departmentMapper.toDepartment(request);
         departmentRepo.save(department);
@@ -48,10 +54,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public void updateDepartmentStatus(UUID id, Boolean isActive) {
-        Department department = departmentRepo.findById(id).orElseThrow(
-                () -> new NotFoundException("Department not found")
-        );
+        Department department = findDepartmentById(id);
         department.setIsActive(isActive);
         department.getEmployees()
                 .forEach(emp->emp.setIsActive(isActive));
@@ -76,5 +81,25 @@ public class DepartmentServiceImpl implements DepartmentService {
         );
     }
 
+    @Override
+    public DepartmentStatisticsResponse getDepartmentStatistics(UUID departmentId) {
+        Department foundDepartment = findDepartmentById(departmentId);
+        Long count = empRepo.countEmployeeByDepartmentId(departmentId);
+        Long active = empRepo.countAllByIsActiveAndDepartment(true, foundDepartment);
+        BigDecimal avg = empRepo.getEmployeesAvgSalaryByDepartment(departmentId);
 
+        return DepartmentStatisticsResponse.builder()
+                .departmentName(foundDepartment.getName())
+                .totalEmployees(count)
+                .totalActiveEmployees(active)
+                .averageSalary(avg.setScale(8, RoundingMode.HALF_EVEN))
+                .build();
+    }
+
+    private Department findDepartmentById(UUID departmentId) {
+        return departmentRepo.findById(departmentId)
+                .orElseThrow(
+                () -> new NotFoundException("Department not found")
+        );
+    }
 }
